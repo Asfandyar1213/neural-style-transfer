@@ -1,0 +1,2 @@
+# This file ensures that the uploads directory is created and tracked by git
+# The directory will store uploaded content and style images 

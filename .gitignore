@@ -1,0 +1,56 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environment
+venv/
+ENV/
+env/
+
+# IDE folders
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# User uploaded files
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Generated output files
+static/outputs/*
+!static/outputs/.gitkeep
+
+# Saved model checkpoints
+checkpoints/
+*.pth
+
+# Jupyter notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Logs and databases
+*.log
+*.sqlite
+
+# OS-specific files
+.DS_Store
+Thumbs.db 

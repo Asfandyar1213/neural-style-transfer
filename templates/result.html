@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Transfer Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 20px;
+            padding-bottom: 60px;
+        }
+        .container {
+            max-width: 960px;
+        }
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .result-image {
+            width: 100%;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .result-row {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="text-center">Neural Style Transfer</h1>
+            <p class="lead text-center">Your Style Transfer Result</p>
+        </div>
+
+        <div class="alert alert-success text-center">
+            <h4>Style Transfer Complete!</h4>
+            <p>Your image has been successfully transformed.</p>
+        </div>
+
+        <div class="row result-row">
+            {% if method == "optimization" %}
+                <!-- Show content and style images for optimization method -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Content Image</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <img src="{{ content_url }}" class="result-image" alt="Content Image">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Style Image</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <img src="{{ style_url }}" class="result-image" alt="Style Image">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Result Image</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <img src="{{ output_url }}" class="result-image" alt="Result Image">
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Show only content and result for pretrained model -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Content Image</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <img src="{{ content_url }}" class="result-image" alt="Content Image">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Result Image</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <img src="{{ output_url }}" class="result-image" alt="Result Image">
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="d-grid">
+                    <a href="/" class="btn btn-primary">Create Another Style Transfer</a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-grid">
+                    <a href="{{ output_url }}" class="btn btn-success" download>Download Result Image</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">What's Next?</h5>
+                </div>
+                <div class="card-body">
+                    <p>Here are some things you can try:</p>
+                    <ul>
+                        <li>Try different style and content images</li>
+                        <li>Adjust the style weight to control how much style is applied</li>
+                        <li>Increase iterations for more refined results (may take longer)</li>
+                        <li>Try different pretrained style models</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

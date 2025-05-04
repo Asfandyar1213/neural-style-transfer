@@ -1,0 +1,2 @@
+# This file ensures that the outputs directory is created and tracked by git
+# The directory will store generated stylized images 

@@ -1,0 +1,2 @@
+# This file ensures that the models directory is created and tracked by git
+# The directory will store pretrained style transfer models 

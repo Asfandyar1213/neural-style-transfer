@@ -1,0 +1,4 @@
+This is a placeholder file to ensure the static directory is created.
+The following directories will be created:
+- static/uploads
+- static/outputs 

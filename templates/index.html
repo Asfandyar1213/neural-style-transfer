@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Style Transfer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 20px;
+            padding-bottom: 60px;
+        }
+        .container {
+            max-width: 960px;
+        }
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+        #method-options {
+            margin-top: 20px;
+        }
+        .method-option {
+            display: none;
+        }
+        .method-option.active {
+            display: block;
+        }
+        .preview-image {
+            max-height: 200px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="text-center">Neural Style Transfer</h1>
+            <p class="lead text-center">Transform your images using AI-powered style transfer</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Upload Images</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="uploadForm" action="/process" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="methodSelect" class="form-label">Style Transfer Method</label>
+                                <select class="form-select" id="methodSelect" name="method">
+                                    <option value="optimization">Optimization-Based Style Transfer</option>
+                                    <option value="pretrained">Fast Style Transfer (Pre-trained Model)</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="contentImage" class="form-label">Content Image</label>
+                                <input class="form-control" type="file" id="contentImage" name="content_image" accept="image/jpeg,image/png" required>
+                                <div id="contentPreview" class="text-center"></div>
+                            </div>
+
+                            <div id="method-options">
+                                <!-- Optimization method options -->
+                                <div id="optimization-options" class="method-option active">
+                                    <div class="mb-3">
+                                        <label for="styleImage" class="form-label">Style Image</label>
+                                        <input class="form-control" type="file" id="styleImage" name="style_image" accept="image/jpeg,image/png">
+                                        <div id="stylePreview" class="text-center"></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="iterations" class="form-label">Iterations</label>
+                                            <input type="number" class="form-control" id="iterations" name="iterations" value="100" min="50" max="500">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="styleWeight" class="form-label">Style Weight</label>
+                                            <input type="number" class="form-control" id="styleWeight" name="style_weight" value="1000000">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="contentWeight" class="form-label">Content Weight</label>
+                                            <input type="number" class="form-control" id="contentWeight" name="content_weight" value="1">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pretrained model options -->
+                                <div id="pretrained-options" class="method-option">
+                                    <div class="mb-3">
+                                        <label for="pretrainedModel" class="form-label">Select Style</label>
+                                        <select class="form-select" id="pretrainedModel" name="pretrained_model">
+                                            {% if pretrained_models %}
+                                                {% for model in pretrained_models %}
+                                                    <option value="{{ model.file }}">{{ model.name }}</option>
+                                                {% endfor %}
+                                            {% else %}
+                                                <option value="" disabled>No pretrained models available</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary" id="submitBtn">Transform Image</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h4 class="mb-0">About Neural Style Transfer</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Neural Style Transfer is an AI technique that applies the style of one image to the content of another.</p>
+                        
+                        <h5>Optimization-Based Method</h5>
+                        <p>This method uses a neural network to extract content and style features from your images, then optimizes a new image to match both.</p>
+                        <ul>
+                            <li><strong>Content Image:</strong> The image whose content you want to preserve</li>
+                            <li><strong>Style Image:</strong> The image whose style you want to apply</li>
+                            <li><strong>Iterations:</strong> More iterations produce better results but take longer</li>
+                            <li><strong>Style Weight:</strong> Higher values emphasize style over content</li>
+                            <li><strong>Content Weight:</strong> Higher values preserve more of the original content</li>
+                        </ul>
+                        
+                        <h5>Fast Style Transfer</h5>
+                        <p>This method uses pre-trained models that can apply a specific style instantly.</p>
+                        <p>Simply select a style and upload your content image for immediate results.</p>
+                        
+                        <div class="alert alert-info mt-3">
+                            <strong>Note:</strong> Processing may take several seconds to minutes depending on the method and parameters chosen.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Method selector
+        document.getElementById('methodSelect').addEventListener('change', function() {
+            const method = this.value;
+            document.querySelectorAll('.method-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.getElementById(`${method}-options`).classList.add('active');
+        });
+
+        // Image preview
+        document.getElementById('contentImage').addEventListener('change', function() {
+            previewImage('contentImage', 'contentPreview');
+        });
+
+        document.getElementById('styleImage').addEventListener('change', function() {
+            previewImage('styleImage', 'stylePreview');
+        });
+
+        function previewImage(inputId, previewId) {
+            const file = document.getElementById(inputId).files[0];
+            const preview = document.getElementById(previewId);
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Preview">`;
+                }
+                
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
+        // Form submission
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            const method = document.getElementById('methodSelect').value;
+            
+            if (method === 'optimization') {
+                const styleFile = document.getElementById('styleImage').files[0];
+                if (!styleFile) {
+                    e.preventDefault();
+                    alert('Please select a style image for optimization method.');
+                    return;
+                }
+            } else if (method === 'pretrained') {
+                const modelSelect = document.getElementById('pretrainedModel');
+                if (!modelSelect.value) {
+                    e.preventDefault();
+                    alert('Please select a pretrained style model.');
+                    return;
+                }
+            }
+            
+            // Disable submit button to prevent multiple submissions
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerHTML = 'Processing... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        });
+    </script>
+</body>
+</html> 
